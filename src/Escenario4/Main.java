@@ -2,7 +2,7 @@ package Escenario4;
 
 public class Main {
     public static void main(String[] args) {
-        ListaSimplementeCircular partida = new ListaSimplementeCircular();
+        ListaDoblementeCircular partida = new ListaDoblementeCircular();
 
         // 1. Sentamos a los jugadores
         partida.agregar("Mago");

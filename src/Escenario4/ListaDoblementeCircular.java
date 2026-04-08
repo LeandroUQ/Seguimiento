@@ -1,11 +1,11 @@
 package Escenario4;
 
-public class ListaSimplementeCircular {
+public class ListaDoblementeCircular {
     Nodo cabeza;
     Nodo cola;
     Nodo turnoActual; // Puntero que indica de quién es el turno
 
-    public ListaSimplementeCircular() {
+    public ListaDoblementeCircular() {
         this.cabeza = null;
         this.cola = null;
         this.turnoActual = null;
@@ -17,12 +17,15 @@ public class ListaSimplementeCircular {
         if (cabeza == null) {
             cabeza = nuevoNodo;
             cola = nuevoNodo;
-            cola.siguiente = cabeza; // Cierra el círculo
+            cabeza.siguiente = cabeza;
+            cabeza.anterior = cabeza;
             turnoActual = cabeza;    // El primer jugador en entrar tiene el primer turno
         } else {
             cola.siguiente = nuevoNodo;
+            nuevoNodo.anterior = cola;
+            nuevoNodo.siguiente = cabeza;
+            cabeza.anterior = nuevoNodo;
             cola = nuevoNodo;
-            cola.siguiente = cabeza;
         }
         System.out.println("🎮 Jugador añadido: " + jugador);
     }
@@ -34,7 +37,6 @@ public class ListaSimplementeCircular {
         }
 
         Nodo actual = cabeza;
-        Nodo anterior = cola;
         boolean encontrado = false;
 
         do {
@@ -55,16 +57,18 @@ public class ListaSimplementeCircular {
                 } else if (actual == cabeza) {
                     cabeza = cabeza.siguiente;
                     cola.siguiente = cabeza;
+                    cabeza.anterior = cola;
                 } else if (actual == cola) {
-                    anterior.siguiente = cabeza;
-                    cola = anterior;
+                    cola = actual.anterior;
+                    cola.siguiente = cabeza;
+                    cabeza.anterior = cola;
                 } else {
-                    anterior.siguiente = actual.siguiente;
+                    actual.anterior.siguiente = actual.siguiente;
+                    actual.siguiente.anterior = actual.anterior;
                 }
                 System.out.println("🚪 Expulsado: " + jugador);
                 break;
             }
-            anterior = actual;
             actual = actual.siguiente;
         } while (actual != cabeza);
 
@@ -77,16 +81,14 @@ public class ListaSimplementeCircular {
         if (cabeza == null) return false;
 
         Nodo actual = cabeza;
-        Nodo anterior = cola;
 
         do {
             if (actual.jugador.equals(jugador)) {
                 System.out.println("🔍 Búsqueda de [" + jugador + "]:");
-                System.out.println("   ⬅️ Jugó antes: " + anterior.jugador);
+                System.out.println("   ⬅️ Jugó antes: " + actual.anterior.jugador);
                 System.out.println("   ➡️ Juega después: " + actual.siguiente.jugador);
                 return true;
             }
-            anterior = actual;
             actual = actual.siguiente;
         } while (actual != cabeza);
 
@@ -123,12 +125,7 @@ public class ListaSimplementeCircular {
 
     public void retrocederTurno() {
         if (turnoActual != null) {
-            Nodo temporal = cabeza;
-            // Buscamos el nodo que apunta al turno actual
-            while (temporal.siguiente != turnoActual) {
-                temporal = temporal.siguiente;
-            }
-            turnoActual = temporal;
+            turnoActual = turnoActual.anterior;
             System.out.println("⏪ Turno retrocedido. Ahora juega: " + turnoActual.jugador);
         }
     }
